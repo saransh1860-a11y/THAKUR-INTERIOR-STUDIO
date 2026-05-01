@@ -12,7 +12,7 @@ export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: 'Hello! I am your personal design assistant from Design Excel Architects. How can I help you transform your space today?' }
+    { role: 'model', text: 'Hello! I am your personal design assistant from Thakur Interior Studio. How can I help you transform your space today?' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -60,7 +60,7 @@ export default function Chatbot() {
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-lg leading-tight">Design Excel Architects</h3>
+                  <h3 className="font-serif text-lg leading-tight">Thakur Interior Studio</h3>
                   <span className="text-[10px] uppercase tracking-widest opacity-60">AI Design Assistant</span>
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function Chatbot() {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         className="w-16 h-16 rounded-full bg-luxury-ink text-white shadow-2xl flex items-center justify-center relative group"
-        aria-label="Toggle Design Excel Architects AI Assistant"
+        aria-label="Toggle Thakur Interior Studio AI Assistant"
       >
         <AnimatePresence mode="wait">
           {isOpen ? (
