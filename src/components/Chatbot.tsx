@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, X, Send, User, Sparkles, Loader2 } from 'lucide-react';
-import { getInteriorAdvice } from '../services/geminiService';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   role: 'user' | 'model';
@@ -12,7 +12,10 @@ export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: 'Hello! I am your personal design assistant from Thakur Interior Studio. How can I help you transform your space today?' }
+    { 
+      role: 'model', 
+      text: 'Hello! I am your personal design assistant from **Thakur Interior Studio**.\n\nI can help you with:\n* **PVC Panels** and Modern **Wallpaper**\n* Custom **Blinds** for windows\n* **Bedroom Design** and Luxury Renovations\n\nHow can I help you transform your space today?' 
+    }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -37,10 +40,24 @@ export default function Chatbot() {
       parts: [{ text: m.text }]
     }));
 
-    const response = await getInteriorAdvice(userMsg, chatHistory);
-    
-    setMessages(prev => [...prev, { role: 'model', text: response }]);
-    setIsLoading(false);
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMsg, history: chatHistory }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.error) throw new Error(data.error);
+
+      setMessages(prev => [...prev, { role: 'model', text: data.text }]);
+    } catch (error) {
+      console.error("Chat Error:", error);
+      setMessages(prev => [...prev, { role: 'model', text: "I am currently experiencing some technical difficulties. Please feel free to reach out to us via WhatsApp for immediate assistance." }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,7 +107,22 @@ export default function Chatbot() {
                         : 'bg-white border border-luxury-ink/5 text-luxury-ink/80 rounded-tl-none shadow-sm'
                     }`}
                   >
-                    {m.text}
+                    {m.role === 'user' ? (
+                      m.text
+                    ) : (
+                      <div className="space-y-2">
+                        <ReactMarkdown
+                          components={{
+                            p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc ml-4 space-y-1 mb-2">{children}</ul>,
+                            li: ({ children }) => <li className="pl-1">{children}</li>,
+                            strong: ({ children }) => <strong className="font-bold text-luxury-ink">{children}</strong>,
+                          }}
+                        >
+                          {m.text}
+                        </ReactMarkdown>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

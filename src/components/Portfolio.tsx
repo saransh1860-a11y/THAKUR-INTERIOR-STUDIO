@@ -3,31 +3,31 @@ import { useState } from 'react';
 
 const portfolioItems = [
   {
-    title: 'Modern Minimalist Villa',
+    title: 'PVC Panel Feature Wall',
     category: 'Residential',
     image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1000&auto=format&fit=crop',
     span: 'md:col-span-2 md:row-span-2'
   },
   {
-    title: 'Corporate HQ Design',
+    title: 'Custom Office Blinds',
     category: 'Commercial',
     image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1000&auto=format&fit=crop',
     span: 'md:col-span-1 md:row-span-1'
   },
   {
-    title: 'Boutique Hotel Lobby',
+    title: 'Boutique Hotel Accent Wall',
     category: 'Hospitality',
     image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=1000&auto=format&fit=crop',
     span: 'md:col-span-1 md:row-span-1'
   },
   {
-    title: 'Art Deco Living Space',
+    title: 'Artistic Wallpaper Design',
     category: 'Luxury',
     image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1000&auto=format&fit=crop',
     span: 'md:col-span-1 md:row-span-2'
   },
   {
-    title: 'Minimalist Home Office',
+    title: 'Minimalist Studio Wall',
     category: 'Residential',
     image: 'https://images.unsplash.com/photo-1593062096033-9a26b09da705?q=80&w=1000&auto=format&fit=crop',
     span: 'md:col-span-1 md:row-span-1'
