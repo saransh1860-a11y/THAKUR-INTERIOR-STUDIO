@@ -29,8 +29,8 @@ let aiInstance: GoogleGenAI | null = null;
 function getAI() {
   if (!aiInstance) {
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
-      throw new Error("GEMINI_API_KEY is not configured or is a placeholder.");
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not defined in the environment.");
     }
     aiInstance = new GoogleGenAI({ apiKey });
   }
@@ -60,8 +60,14 @@ export async function getInteriorAdvice(userMessage: string, chatHistory: any[] 
     return response.text || "I'm sorry, I couldn't process that request at the moment. Please try calling us directly at 062830 90578.";
   } catch (error) {
     console.error("Gemini Error:", error);
-    if (error instanceof Error && error.message.includes("API key not valid")) {
-       return "I'm sorry, there's an issue with my AI credentials. Please ensure the GEMINI_API_KEY is correctly set in the environment.";
+    if (error instanceof Error) {
+      if (error.message.includes("API key not valid")) {
+        return "I'm sorry, there's an issue with the AI credentials (API key invalid). Please ensure the GEMINI_API_KEY is correctly set in the Secrets panel.";
+      }
+      if (error.message.includes("not defined in the environment")) {
+        return "I'm sorry, the GEMINI_API_KEY is not defined in the environment. Please check the Secrets panel in AI Studio.";
+      }
+      return `I am currently experiencing technical difficulties: ${error.message}`;
     }
     return "I am currently experiencing some technical difficulties. Please feel free to reach out to us via WhatsApp for immediate assistance.";
   }
