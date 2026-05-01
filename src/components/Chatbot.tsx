@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, X, Send, User, Sparkles, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { getInteriorAdvice } from '../services/geminiService';
 
 interface Message {
   role: 'user' | 'model';
@@ -41,17 +42,8 @@ export default function Chatbot() {
     }));
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg, history: chatHistory }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.error) throw new Error(data.error);
-
-      setMessages(prev => [...prev, { role: 'model', text: data.text }]);
+      const response = await getInteriorAdvice(userMsg, chatHistory);
+      setMessages(prev => [...prev, { role: 'model', text: response }]);
     } catch (error) {
       console.error("Chat Error:", error);
       setMessages(prev => [...prev, { role: 'model', text: "I am currently experiencing some technical difficulties. Please feel free to reach out to us via WhatsApp for immediate assistance." }]);
