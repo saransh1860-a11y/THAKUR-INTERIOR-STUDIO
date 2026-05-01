@@ -1,34 +1,23 @@
 import { useState, useEffect } from 'react';
-import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { 
   collection, 
   query, 
   orderBy, 
   onSnapshot, 
   doc, 
-  updateDoc,
-  getDoc
+  updateDoc
 } from 'firebase/firestore';
-import { 
-  signInWithPopup, 
-  GoogleAuthProvider, 
-  onAuthStateChanged,
-  User,
-  signOut
-} from 'firebase/auth';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ClipboardList, 
   Clock, 
   CheckCircle, 
   XCircle, 
-  LogOut, 
-  LogIn,
   Calendar,
   Phone,
   User as UserIcon,
   Filter,
-  ShieldAlert,
   Mail,
   MessageSquare
 } from 'lucide-react';
@@ -52,8 +41,6 @@ interface Message {
 }
 
 export default function AdminDashboard() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeTab, setActiveTab] = useState<'consultations' | 'messages'>('consultations');
@@ -61,38 +48,11 @@ export default function AdminDashboard() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'contacted' | 'completed' | 'cancelled'>('all');
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        // Check if user is admin
-        try {
-          const adminDoc = await getDoc(doc(db, 'admins', currentUser.uid));
-          if (adminDoc.exists() || currentUser.email === 'saransh1860@gmail.com') {
-            setIsAdmin(true);
-          } else {
-            setIsAdmin(false);
-          }
-        } catch (error) {
-          console.error("Error checking admin status:", error);
-          // Fallback to email check if Firestore read fails
-          if (currentUser.email === 'saransh1860@gmail.com') {
-            setIsAdmin(true);
-          } else {
-            setIsAdmin(false);
-          }
-        }
-      } else {
-        setIsAdmin(false);
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribeAuth();
+    // No more auth check, directly load data
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (!isAdmin) return;
-
     const qC = query(collection(db, 'consultations'), orderBy('createdAt', 'desc'));
     const unsubscribeC = onSnapshot(qC, 
       (snapshot) => {
@@ -125,18 +85,7 @@ export default function AdminDashboard() {
       unsubscribeC();
       unsubscribeM();
     };
-  }, [isAdmin]);
-
-  const handleLogin = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
-  };
-
-  const handleLogout = () => signOut(auth);
+  }, []);
 
   const updateStatus = async (id: string, newStatus: Consultation['status']) => {
     try {
@@ -158,57 +107,6 @@ export default function AdminDashboard() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-luxury-bg flex flex-col items-center justify-center p-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-md bg-white p-12 rounded-3xl shadow-xl border border-luxury-ink/5"
-        >
-          <div className="w-20 h-20 bg-luxury-gold/10 rounded-full flex items-center justify-center mx-auto mb-8">
-            <ClipboardList className="w-10 h-10 text-luxury-gold" />
-          </div>
-          <h1 className="text-3xl font-serif mb-4 text-luxury-ink">Admin Access</h1>
-          <p className="text-luxury-ink/60 mb-8">
-            Please log in with your authorized account to view booked consultations.
-          </p>
-          <button
-            onClick={handleLogin}
-            className="w-full bg-luxury-ink text-white py-4 rounded-full flex items-center justify-center gap-3 hover:bg-luxury-gold transition-all duration-300 shadow-lg font-medium"
-          >
-            <LogIn className="w-5 h-5" /> Sign in with Google
-          </button>
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-luxury-bg flex flex-col items-center justify-center p-6 text-center">
-        <div className="max-w-md bg-white p-12 rounded-3xl shadow-xl border border-red-100">
-          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-8">
-            <ShieldAlert className="w-10 h-10 text-red-500" />
-          </div>
-          <h1 className="text-3xl font-serif mb-4 text-red-600">Access Denied</h1>
-          <p className="text-luxury-ink/60 mb-8">
-            Your account ({user.email}) is not authorized to access this dashboard. 
-            Please contact the system administrator.
-          </p>
-          <div className="space-y-4">
-            <button
-               onClick={handleLogout}
-               className="w-full border border-luxury-ink/10 text-luxury-ink py-4 rounded-full flex items-center justify-center gap-3 hover:bg-luxury-ink hover:text-white transition-all duration-300 font-medium"
-            >
-              <LogOut className="w-5 h-5" /> Sign Out
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-luxury-bg">
       {/* Sidebar/Header */}
@@ -225,17 +123,10 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex items-center gap-6">
-            <div className="hidden md:block text-right">
-              <p className="text-sm font-medium">{user.displayName}</p>
-              <p className="text-[10px] opacity-60">{user.email}</p>
+            <div className="text-right">
+              <p className="text-sm font-medium">Studio Manager</p>
+              <p className="text-[10px] opacity-60">Dashboard Active</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-              title="Logout"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
           </div>
         </div>
       </header>
