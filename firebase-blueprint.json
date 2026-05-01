@@ -1,0 +1,99 @@
+{
+  "entities": {
+    "consultation": {
+      "title": "Consultation",
+      "description": "Records of booked design consultations",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the client"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number of the client"
+        },
+        "service": {
+          "type": "string",
+          "description": "Service the client is interested in"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "contacted",
+            "completed",
+            "cancelled"
+          ],
+          "description": "Current status of the consultation request"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the consultation was requested"
+        }
+      },
+      "required": [
+        "name",
+        "phone",
+        "service",
+        "status",
+        "createdAt"
+      ]
+    },
+    "message": {
+      "title": "Message",
+      "description": "Messages from the contact form",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "name",
+        "phone",
+        "email",
+        "message",
+        "createdAt"
+      ]
+    },
+    "admin": {
+      "title": "Admin",
+      "description": "Admin user record for authorization",
+      "type": "object",
+      "properties": {
+        "authorized": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/consultations/{consultationId}": {
+      "schema": "consultation",
+      "description": "A collection of consultation requests"
+    },
+    "/messages/{messageId}": {
+      "schema": "message",
+      "description": "A collection of contact form messages"
+    },
+    "/admins/{uid}": {
+      "schema": "admin",
+      "description": "Authorized admin users"
+    }
+  }
+}
