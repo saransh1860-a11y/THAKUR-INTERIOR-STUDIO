@@ -40,19 +40,16 @@ export async function getInteriorAdvice(userMessage: string, chatHistory: any[] 
       { role: 'user', parts: [{ text: userMessage }] }
     ];
 
-    const model = ai.getGenerativeModel({
+    const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      systemInstruction: SYSTEM_INSTRUCTION,
-    });
-
-    const result = await model.generateContent({
       contents,
-      generationConfig: {
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION,
         temperature: 0.7,
       },
     });
 
-    return result.response.text() || "I'm sorry, I couldn't process that request at the moment. Please try calling us directly at 062830 90578.";
+    return response.text || "I'm sorry, I couldn't process that request at the moment. Please try calling us directly at 062830 90578.";
   } catch (error) {
     console.error("Gemini Error:", error);
     return "I am currently experiencing some technical difficulties. Please feel free to reach out to us via WhatsApp for immediate assistance.";

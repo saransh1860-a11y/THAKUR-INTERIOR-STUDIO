@@ -31,8 +31,8 @@ export default function Chatbot() {
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setIsLoading(true);
 
-    // Prepare history for Gemini
-    const chatHistory = messages.map(m => ({
+    // Prepare history for Gemini (skip the initial greeting)
+    const chatHistory = messages.slice(1).map(m => ({
       role: m.role,
       parts: [{ text: m.text }]
     }));
